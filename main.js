@@ -37,9 +37,39 @@ function updateName(event){
   let update = event.target.value
   let weatherData = weather[update.toLowerCase()];
   if(weatherData){
-    let locationName = document.querySelector("h1");
+    let locationName = document.querySelector("#city-name");
     locationName.textContent = update.toUpperCase();
   }
 }
+let searchBtn = document.getElementById("search-btn");
+let cityName = document.getElementById("city-name");
+let locationInput = document.querySelector(".location");
+
+searchBtn.addEventListener("click", function () {
+  cityName.innerHTML = locationInput.value.toUpperCase();
+});
+
+function displayTemperature(response) {
+  let temperatureElement = document.querySelector("#temperature");
+  let cityElement = document.querySelector("#city-name");
+  temperatureElement.innerHTML = Math.round(response.data.main.temp);
+  cityElement.innerHTML = response.data.name;
+}
 
 
+let apiKey = "b98d12bde72f31eae25d84b6d0a808dd";
+let city = "Nairobi";
+let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+axios.get(apiUrl).then(displayTemperature);
+
+function getCurrentLocationWeather() {
+  navigator.geolocation.getCurrentPosition((position) => {
+    let latitude = position.coords.latitude;
+    let longitude = position.coords.longitude;
+    let apiUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+    axios.get(apiUrl).then(displayTemperature);
+  });
+}
+
+let currentLocationButton = document.querySelector("#current-location");
+currentLocationButton.addEventListener("click", getCurrentLocationWeather);
